@@ -9,20 +9,19 @@ bez_array = [(15,10),(15,20),(10,12),(10,18),(20,12),(20,18)]
 grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
 
 # Initialize the objects with random positions. Random Y coordinate but x coordinate is either left or right 
-objects = [{'x': random.choice([0,grid_size - 1]), 'y': random.randint(0, grid_size - 1)} for _ in range(num_objects)]
+objects = [{'x': random.choice([0,grid_size - 1]), 'y': random.randint(0, grid_size - 1), 'active': 0} for _ in range(num_objects)]
 
-# objects = [{'x': 0, 'y': 0} for _ in range(num_objects)]
-
-#for _ in range(num_objects):
-#    {'x': random.choice([0,grid_size]), 'y': random.randint(0, grid_size - 1)
+# Set initial destinations to current position
 t = 0
 for i in objects:
-    i["destination"] =  (objects[t]["x"],objects[t]["y"])
+    i["destination"] =  (objects[t]["x"], objects[t]["y"])
     t = t + 1
-t = 0
 
+# allocate molecules to move; set destination to benzine
+t = 0
 for i in bez_array:
     objects[t]["destination"] = i
+    objects[t]["active"] = 1
     t = t + 1
 
 # Function to print the grid
@@ -38,21 +37,33 @@ while True:
         for j in range(grid_size):
             grid[i][j] = ' '
 
+    fin_count = 0    # Count the number of inactive objects
+    # note: occupancies doesn't do anythign yet 
+    occupancies = [[False]*grid_size] * 2    # log occupancies
+
     # Move and update the objects
     for obj in objects:
-        # Randomly choose a direction
-        dir_vector = (obj["destination"][0] - obj["x"],obj["destination"][1]-obj["y"])
-        print(dir_vector)
+        # skip if inactive object
+        if (obj["active"] == 0):
+            fin_count += 1
+            continue
+
+        # Move in direction of destination
+        dir_vector = (obj["destination"][0] - obj["x"], obj["destination"][1] - obj["y"])
+        if (dir_vector[0] + dir_vector[1] == 0):
+            obj["active"] = 0
+            fin_count += 1
+            continue
         
         # Update the object's position based on the chosen direction
-        if dir_vector[1] > 0 and obj['y'] != :
+        if dir_vector[0] > 0:
+            obj['x'] += 1
+        if dir_vector[0] < 0:
+            obj['x'] -= 1
+        if dir_vector[1] > 0:
             obj['y'] += 1
         if dir_vector[1] < 0:
             obj['y'] -= 1
-        if dir_vector[0] < 0:
-            obj['x'] += 1
-        if dir_vector[0] > 0:
-            obj['x'] -= 1
             
         #check if object is out of bounds, if so, set it to the edge
         if obj['x'] < 0:
@@ -64,11 +75,16 @@ while True:
         if obj['y'] > grid_size - 1:
             obj['y'] = grid_size - 1
 
+        occupancies[0][obj['x']] = True
+        occupancies[1][obj['y']] = True
+    
+    # Break from loop if all objects in position
+    if (fin_count == num_objects):
+        break
+
     # Place objects on the grid
     # print(objects)
     for obj in objects:
-        #print(obj['y'])
-        #print(obj['x'])    
         grid[obj['y']][obj['x']] = 'O'
 
     # Print the grid
