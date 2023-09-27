@@ -20,6 +20,35 @@ bez_array = [
     (25, 20, "hydrogen"),
     (25, 10, "hydrogen"),
 ]
+
+glu_array = [
+    (3,14,"oxygen"),
+    (1,16,"hydrogen"),
+    (6,16,"carbon"),
+    (7,14, "hydrogen"),
+    (7,18,"hydrogen"),      
+    (9,14,"carbon"),
+    (10,16,"hydrogen"),
+    (12,16,"carbon"),
+    (15,14,"carbon"),
+    (18,16,"carbon"),
+    (21,14,"carbon"),
+    (24,16,"oxygen"),
+    (9,10,"oxygen"),
+    (8,8,"hydrogen"),
+    (12,20,"oxygen"),
+    (15,10,"oxygen"),
+    (18,20,"oxygen"),
+    (11,14,"hydrogen"),
+    (14,17,"hydrogen"),
+    (17,14,"hydrogen"),
+    (22,13,"hydrogen"),
+    (16,8,"hydrogen"),
+    (11,22,"hydrogen"),
+    (17,22,"hydrogen"),
+
+]
+mol = glu_array
 # Initialize the grid with empty nodes
 grid = [[" " for _ in range(grid_size)] for _ in range(grid_size)]
 
@@ -43,7 +72,7 @@ for i in objects:
     t = t + 1
 t = 0
 
-for i in bez_array:
+for i in mol:
     objects[t]["atom"] = i[2]
     objects[t]["destination"] = i
     t = t + 1
@@ -70,6 +99,9 @@ def carbon(x, y, screen):
 # hydrogen atom draw function
 def hydrogen(x, y, screen):
     pygame.draw.circle(screen, (255, 255, 255), (x, y), 15, 1)
+
+def oxygen(x, y, screen):
+    pygame.draw.circle(screen, (255, 0, 0), (x, y), 15, 0)
 
 
 # move function by step of 1
@@ -125,6 +157,12 @@ while running:
             )
         elif obj["atom"] == "hydrogen":
             hydrogen(
+                resizecoord(obj["x"], obj["y"])[0],
+                resizecoord(obj["x"], obj["y"])[1],
+                screen,
+            )
+        elif obj["atom"] == "oxygen":
+            oxygen(
                 resizecoord(obj["x"], obj["y"])[0],
                 resizecoord(obj["x"], obj["y"])[1],
                 screen,
