@@ -48,7 +48,23 @@ glu_array = [
     (17,22,"hydrogen"),
 
 ]
-mol = glu_array
+
+acetone_array = [
+    (15, 11, "oxygen"),
+    (15, 15, "carbon"),
+    (11, 17, "carbon"),
+    (19, 17, "carbon"),
+
+    (11, 19, 'hydrogen'),
+    (10, 18, "hydrogen"),
+    (10, 16, "hydrogen"),
+
+    (19, 19, "hydrogen"),
+    (20, 18, "hydrogen"),
+    (20, 16, "hydrogen"),
+
+]
+mol = acetone_array
 # Initialize the grid with empty nodes
 grid = [[" " for _ in range(grid_size)] for _ in range(grid_size)]
 
