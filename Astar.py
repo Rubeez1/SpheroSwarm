@@ -8,6 +8,9 @@ class Node:
         self.parent = parent
         self.g_cost = g_cost
 
+    def set_f_cost(self, f_cost):
+        self.f_cost = f_cost
+
 def get_next_nodes(map, curr_node):
     next_node_coordinates = getAdjacent(map, curr_node.x, curr_node.y)
     next_nodes = []
@@ -55,7 +58,9 @@ def find_path(grid, starting_position, destination):
     # 1. Initialize open list
     # Add starting position to the open list
     open = []
+    h_cost = abs((starting_position.x - destination.x) ** 2 + (starting_position.y + destination.y) ** 2)
     open.append(Node(starting_position.x, starting_position.y, 0, 0))
+    open[0].set_f_cost(h_cost)
 
     # 2. Initialize closed list
     close = []
@@ -65,7 +70,7 @@ def find_path(grid, starting_position, destination):
         # find node with least f on open list
         least_f_node = open[0]
         for node in open:
-            if(least_f_node.g_cost > node.g_cost):
+            if(least_f_node.f_cost > node.f_cost):
                 least_f_node = node
 
         # pop the node q
@@ -88,14 +93,18 @@ def find_path(grid, starting_position, destination):
 
                 # f = g_cost (cost to move to the next_node) + h_cost (heuristic to estimate moving cost to the destination)
                 f = node.g_cost + h_cost
+                node.set_f_cost(f)
 
                 # If the node with same position with less f is in the open list, skip
+                for open_node in open:
+                    if(open_node.)
 
                 # If the node with same posiiton is in closed list with has lower f, skip
 
                 # add the node to open list
 
         # Push least_f_node to closed list
+        close.append()
 
         # Return updated map information and path for the sphero ball
         
