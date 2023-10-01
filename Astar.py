@@ -2,23 +2,20 @@
 
 class Node:
     # Node class stores its position, g cost, and its parent
-    def __init__(self, x, y, isEmpty):
+    def __init__(self, x, y, parent, g_cost):
         self.x = x
         self.y = y
-        self.isEmpty = isEmpty
-
-    def set_cost(self, g_cost):
-        self.g_cost = g_cost
-    
-    def set_parent(self, parent):
         self.parent = parent
-
+        self.g_cost = g_cost
 
 def get_next_nodes(map, curr_node):
-    next_nodes = getAdjacent(map, curr_node.x, curr_node.y)
-    for node in next_nodes:
-        if(node.isEmpty == False):
-            next_nodes.remove(node)
+    next_node_coordinates = getAdjacent(map, curr_node.x, curr_node.y)
+    next_nodes = []
+
+    for node in next_node_coordinates:
+        if(map[node[0]][node[1]] == True):
+            # g_cost is curr_node.g_cost + 1 because distance between the nodes is equal
+            next_nodes.append(Node(node[0], node[1], curr_node, curr_node.g_cost + 1))
     return next_nodes
 
 
@@ -45,26 +42,27 @@ def getAdjacent(arr, i, j):
         # the provided position
         for dy in range( -1 if (j > 0) else 0,2 if (j < m) else 1):
             if (dx is not 0 or dy is not 0):
-                v.append(arr[i + dx][j + dy])
+                v.append([i + dx, j + dy])
  
  
     #Returning the vector array
     return v
 
-# grid is map information (array of nodes for now), spheros contain the ball's initial position and destination
+# grid is map information (array of nodes for now). Each element in grid contains informtion whether sphero ball exist, thus acting as obstacle
+# array containing true means a sphero ball can move to location, array containing false means sphero ball cannot move to the location
+# starting position and destination will be list contain x and y for now: [x, y]
 def find_path(grid, starting_position, destination):
     # 1. Initialize open list
     # Add starting position to the open list
     open = []
-    open.append(starting_position)
-    starting_position.isEmpty = False
+    open.append(Node(starting_position.x, starting_position.y, 0, 0))
 
     # 2. Initialize closed list
     close = []
 
     # 3. while open list is not empty
     while(len(open) != 0):
-        # find node with least f on open list called q
+        # find node with least f on open list
         least_f_node = open[0]
         for node in open:
             if(least_f_node.g_cost > node.g_cost):
@@ -74,24 +72,35 @@ def find_path(grid, starting_position, destination):
         open.remove(least_f_node)
 
         # Generate possible next positions to nodes and set their parent to node
-        get_next_nodes()
+        next_nodes = get_next_nodes()
 
         # for each successor
+        for node in next_nodes:
             # if node is goal stop search
+            if(node.x == destination[0] and node.y == destination[1]):
+                open.clear
 
             # Compute f of the node
+            else:
+                # h_cost calculate heuristic for moving to destination
+                # h_cost is calculated with diagonal distance
+                h_cost = abs((node.x - destination.x) ** 2 + (node.y + destination.y) ** 2)
 
-            # If the node with same position with less f is in the open list, skip
+                # f = g_cost (cost to move to the next_node) + h_cost (heuristic to estimate moving cost to the destination)
+                f = node.g_cost + h_cost
 
-            # If the node with same posiiton is in closed list with has lower f, skip
+                # If the node with same position with less f is in the open list, skip
 
-            # add the node to open list
+                # If the node with same posiiton is in closed list with has lower f, skip
 
-        # Push q to closed list
-    pass
+                # add the node to open list
 
-sample = Node(1,2,True)
+        # Push least_f_node to closed list
 
-sample.isEmpty = False
+        # Return updated map information and path for the sphero ball
+        
+    return grid, path
+
+sample = Node(1,2)
 
 print(sample.isEmpty)
