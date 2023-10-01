@@ -1,6 +1,7 @@
 # A* pathfinding algorithm
 
 class Node:
+    # Node class stores its position, g cost, and its parent
     def __init__(self, x, y, isEmpty):
         self.x = x
         self.y = y
