@@ -1,5 +1,6 @@
 import time
 import copy
+import math
 import sphere
 
 grid_size = 30
@@ -9,6 +10,56 @@ mol_array = [(15,10),(15,20),(10,12),(10,18),(20,12),(20,18)]
 
 # Initialize the grid with empty nodes
 grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
+
+class AStarNode:
+    def __init__(self, parent=None, pos=None):
+        self.pos = pos
+        self.parent = parent
+        self.g = 0 #step cost
+        self.h = 0 #heuristic cost (cost to move to destination)
+        self.f = 0 #total cost
+
+        
+# plan: given a sphere object, use astar to find the best path to destination, and give that path as an array.
+def astar(sphere):
+    openList = [] #possinle locations
+    closedList = [] #not possible locations to go to
+    startNode = AStarNode(None, [sphere.pos['x'], sphere.pos['y']])
+    startNode.g = startNode.h = startNode.f = 0
+    endNode = AStarNode(None, [sphere.dest['x'], sphere.dest['y']])
+    endNode.g = endNode.h = endNode.f = 0
+    openList.append(startNode)
+    
+    while(len(openList) > 0):
+        currNode = openList[0]
+        currInd = 0
+        for i, node in enumerate(openList): #basically just a i=1;i<len(openList);i++ for loop to keep trakc of the index and item
+            if node.f < currNode.f:
+                currNode = node
+                currInd = i
+        
+        openList.pop(currInd);
+        closedList.append(currNode)
+        
+        if currNode == endNode:
+            path = []
+            curr = currNode
+            while curr is not None:
+                path.append(curr.pos)
+                curr = curr.parent #basically recursivesly moves back to start from end
+            return path[::-1] #reverses path
+    
+        #generates neighbor nodes
+        children = []
+        for nextStep in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+            newPos = currNode.pos[0] + nextStep[0], currNode.pos[1] + nextStep[1]
+            if newPos[0] > (len(grid) - 1) or newPos[0] < 0 or newPos[1] > (len(grid[len(grid)-1]) -1) or newPos[1] < 0: #checks to make sure not out of bounds
+                continue
+            if occupancies[str(newPos)]: #checks to make sure not occupied
+                continue
+            newNode = AStarNode(currNode, newPos)
+            children.append(newNode)
+        
 
 # Calculate the distance between a starting point and ending point 
 def calculate_distance(start_pos, end_pos):
@@ -45,7 +96,6 @@ objects[0].dest = {'x': mol_array[0][0], 'y': mol_array[0][1]}
 objects[0].active = True
 objects[1].dest = {'x': mol_array[1][0], 'y': mol_array[1][1]}
 objects[1].active = True
-
 
 # Function to print the grid
 def print_grid():
