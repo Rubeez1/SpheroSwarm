@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import numpy as np
 # speed of simulation
 speed = 5
 grid_size = 30
@@ -121,17 +121,17 @@ def oxygen(x, y, screen):
 
 
 # move function by step of 1
-def move(obj):
+def move(obj, grid):
     x = 0
     y = 0
     dir_vector = (obj["destination"][0] - obj["x"], obj["destination"][1] - obj["y"])
-    if dir_vector[0] > 0:
+    if dir_vector[0] > 0 and grid[obj["x"]+1][obj["y"]] != 1:
         x = 1
-    elif dir_vector[0] < 0:
+    elif dir_vector[0] < 0 and grid[obj["x"]-1][obj["y"]] != 1:
         x = -1
-    if dir_vector[1] > 0:
+    elif dir_vector[1] > 0 and grid[obj["x"]][obj["y"]+1] != 1:
         y = 1
-    elif dir_vector[1] < 0:
+    elif dir_vector[1] < 0 and grid[obj["x"]][obj["y"]-1] != 1:
         y = -1
     return x, y
 
@@ -161,8 +161,9 @@ while running:
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill((100, 100, 100))  # RENDER YOUR GAME HERE
-
+    grid  = np.zeros([30, 30], dtype = int)
     for obj in objects:
+
         print(obj)
         print("new set")
         if obj["atom"] == "carbon":
@@ -183,11 +184,13 @@ while running:
                 resizecoord(obj["x"], obj["y"])[1],
                 screen,
             )
-        obj["x"] += move(obj)[0]
-        obj["y"] += move(obj)[1]
+
+        obj["x"] += move(obj,grid)[0]
+        obj["y"] += move(obj,grid)[1]
         obj["x"], obj["y"] = inbound(obj)
         print(obj)
-
+        grid[obj["x"]][obj["y"]] = 1
+        print(grid)
     # flip() the display to put your work on screen
     pygame.display.flip()
 
