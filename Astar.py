@@ -81,8 +81,9 @@ def find_path(grid, starting_position, destination):
 
         # for each successor
         for node in next_nodes:
-            # if node is goal stop search
+            # if node is destination stop search
             if(node.x == destination[0] and node.y == destination[1]):
+                
                 open.clear
 
             else:
