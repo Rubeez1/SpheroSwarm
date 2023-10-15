@@ -51,7 +51,7 @@ def astar(sphere):
     
         #generates neighbor nodes
         children = []
-        for nextStep in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+        for nextStep in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             newPos = currNode.pos[0] + nextStep[0], currNode.pos[1] + nextStep[1]
             if newPos[0] > (len(grid) - 1) or newPos[0] < 0 or newPos[1] > (len(grid[len(grid)-1]) -1) or newPos[1] < 0: #checks to make sure not out of bounds
                 continue
@@ -66,7 +66,7 @@ def astar(sphere):
                     continue
                 #ignore child, since already in closed list (visited
             child.g = currNode.g + 1
-            child.h = calculate_distance(child.pos, endNode.pos)
+            child.h = endNode.pos[0] - child.pos[0] + endNode.pos[1] - child.pos[1] #manhattan distance
             child.f = child.g + child.h
             
             for openNode in openList:
