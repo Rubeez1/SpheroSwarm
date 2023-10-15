@@ -85,8 +85,8 @@ def find_path(grid, starting_position, destination):
             if(node.x == destination[0] and node.y == destination[1]):
                 open.clear
 
-            # Compute f of the node
             else:
+                # Compute f of the node
                 # h_cost calculate heuristic for moving to destination
                 # h_cost is calculated with diagonal distance
                 h_cost = abs((node.x - destination.x) ** 2 + (node.y + destination.y) ** 2)
@@ -95,16 +95,17 @@ def find_path(grid, starting_position, destination):
                 f = node.g_cost + h_cost
                 node.set_f_cost(f)
 
-                # If the node with same position with less f is in the open list, skip
+                # If the node with same position with larger g is in the open list, update to this node
                 for open_node in open:
-                    if(open_node.)
+                    if(open_node.x == node.x and open_node.y == node.y and open_node.g_cost > node.g_cost):
+                        open[index(open_node)]
 
                 # If the node with same posiiton is in closed list with has lower f, skip
 
                 # add the node to open list
 
         # Push least_f_node to closed list
-        close.append()
+        close.append(least_f_node)
 
         # Return updated map information and path for the sphero ball
         
