@@ -21,7 +21,7 @@ class AStarNode:
 
         
 # plan: given a sphere object, use astar to find the best path to destination, and give that path as an array.
-def astar(sphere):
+def astar(sphere, occupancies):
     openList = [] #possible locations
     closedList = [] #not possible locations to go to
     startNode = AStarNode(None, [sphere.pos['x'], sphere.pos['y']])
@@ -33,14 +33,17 @@ def astar(sphere):
     while(len(openList) > 0):
         currNode = openList[0]
         currInd = 0
+        # Find the node with smalleset f cost
         for i, node in enumerate(openList): #basically just a i=1;i<len(openList);i++ for loop to keep trakc of the index and item
             if node.f < currNode.f:
                 currNode = node
                 currInd = i
         
-        openList.pop(currInd);
+        # pop the smallest f cost node
+        openList.pop(currInd)
         closedList.append(currNode)
         
+        # If the node is destination, return the path
         if currNode == endNode:
             path = []
             curr = currNode
@@ -55,7 +58,7 @@ def astar(sphere):
             newPos = currNode.pos[0] + nextStep[0], currNode.pos[1] + nextStep[1]
             if newPos[0] > (len(grid) - 1) or newPos[0] < 0 or newPos[1] > (len(grid[len(grid)-1]) -1) or newPos[1] < 0: #checks to make sure not out of bounds
                 continue
-            if occupancies[str(newPos)]: #checks to make sure not occupied
+            if str(newPos) in occupancies: #checks to make sure not occupied
                 continue
             newNode = AStarNode(currNode, newPos)
             children.append(newNode)
@@ -79,7 +82,7 @@ def astar(sphere):
 
 # Calculate the distance between a starting point and ending point 
 def calculate_distance(start_pos, end_pos):
-        add = pow((end_pos['x'] - start_pos['x']),2) + pow((end_pos['y'] - start_pos['y']),2)
+        add = pow((end_pos[0] - start_pos[0]),2) + pow((end_pos[1] - start_pos[1]),2)
         return pow(add, 0.5)
 
 # Initialize the objects.
@@ -112,6 +115,18 @@ objects[0].dest = {'x': mol_array[0][0], 'y': mol_array[0][1]}
 objects[0].active = True
 objects[1].dest = {'x': mol_array[1][0], 'y': mol_array[1][1]}
 objects[1].active = True
+
+# occupancies: dictionary. Holds all occupied spaces
+#   key: string form of destination
+#   value: id of object occupying that area
+occupancies = {}
+for obj in objects: 
+    occupancies[str(obj.pos)] = obj.id
+
+# Calculate path for each spheros
+for obj in objects:
+    if (obj.active):
+        obj.path = astar(obj, occupancies)
 
 # Function to print the grid
 def print_grid():
