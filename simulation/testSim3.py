@@ -22,7 +22,7 @@ class AStarNode:
         
 # plan: given a sphere object, use astar to find the best path to destination, and give that path as an array.
 def astar(sphere):
-    openList = [] #possinle locations
+    openList = [] #possible locations
     closedList = [] #not possible locations to go to
     startNode = AStarNode(None, [sphere.pos['x'], sphere.pos['y']])
     startNode.g = startNode.h = startNode.f = 0
@@ -59,6 +59,22 @@ def astar(sphere):
                 continue
             newNode = AStarNode(currNode, newPos)
             children.append(newNode)
+        
+        for child in children:
+            for closedChild in closedList:
+                if child == closedChild:
+                    continue
+                #ignore child, since already in closed list (visited
+            child.g = currNode.g + 1
+            child.h = calculate_distance(child.pos, endNode.pos)
+            child.f = child.g + child.h
+            
+            for openNode in openList:
+                if child == openNode and child.g > openNode.g: #looking for lowest cost node
+                    continue
+            
+            openList.append(child)
+            
         
 
 # Calculate the distance between a starting point and ending point 
