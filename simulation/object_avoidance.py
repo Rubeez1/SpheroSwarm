@@ -25,27 +25,28 @@ for n in range(num_objects):
         start_y = 0
     objects.append(sphere.Sphere(n, {'x': start_x, 'y': start_y}, False))
     start_y += 1
-
 # objects = [Sphere(_, {'x': random.choice([0,grid_size - 1]), 'y': random.randint(0, grid_size - 1)}, False) for _ in range(num_objects)]
 
-# allocate molecules to move; set destination to benzine
-# for i in range(len(mol_array)):
-#     objects[i].dest['x'] = mol_array[i][0]
-#     objects[i].dest['y'] = mol_array[i][1]
-#     objects[i].active = True
-objects[37].dest = {'x': mol_array[2][0], 'y': mol_array[2][1]}
-objects[37].active = True
-objects[12].dest = {'x': mol_array[4][0], 'y': mol_array[4][1]}
-objects[12].active = True
-objects[43].dest = {'x': mol_array[3][0], 'y': mol_array[3][1]}
-objects[43].active = True
-objects[18].dest = {'x': mol_array[5][0], 'y': mol_array[5][1]}
-objects[18].active = True
-objects[0].dest = {'x': mol_array[0][0], 'y': mol_array[0][1]}
-objects[0].active = True
-objects[1].dest = {'x': mol_array[1][0], 'y': mol_array[1][1]}
-objects[1].active = True
+init_dist = {}
+taken_objs = ()
+for atom in mol_array: init_dist[str(atom)] = 0
+for atom in mol_array:
+    atom_pos = {'x': atom[0], 'y': atom[1]}
+    for obj in objects:
+        prev_obj = objects[init_dist[str(atom)]]
+        old_dist = calculate_distance(prev_obj.pos, atom_pos)
+        new_dist = calculate_distance(obj.pos, atom_pos)
 
+        better_obj = prev_obj
+        if new_dist < old_dist: better_obj = obj
+
+        if not better_obj.id in taken_objs:
+            init_dist[str(atom)] = better_obj.id
+    taken_objs += (init_dist[str(atom)],)
+for atom in mol_array: 
+    atom_pos = {'x': atom[0], 'y': atom[1]}
+    objects[init_dist[str(atom)]].dest = atom_pos
+    objects[init_dist[str(atom)]].active = True
 
 # Function to print the grid
 def print_grid():
@@ -69,6 +70,8 @@ while True:
     
     # Move and update the objects
     for obj in objects:
+        if obj.pos == obj.dest:
+            obj.active = False
         if not obj.active: continue     # skip if inactive object
 
         # plot out future path
@@ -83,8 +86,6 @@ while True:
         
         # change object position
         obj.pos = copy.deepcopy(obj.step)
-        if obj.pos == obj.dest: 
-            obj.active = False
 
         # add object to new location
         occupancies[str(obj.pos)] = obj.id
@@ -99,7 +100,7 @@ while True:
 
     # Place objects on the grid
     for obj in objects:
-        grid[obj.pos['y']][obj.pos['x']] = str(obj.id)
+        grid[obj.pos['y']][obj.pos['x']] = '0'
         
     # Print the grid
     print_grid()
