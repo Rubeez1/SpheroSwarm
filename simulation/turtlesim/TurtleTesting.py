@@ -1,14 +1,14 @@
 import turtle
 from turtle import *
-import Ball;
+from simulation.turtlesim import InitializeEnv
 
 ball = Turtle()
 ball.shape("circle")
 screen = turtle.Screen()
+screen.screensize(400,400)
 screen.bgcolor("blue")
-git
-l = Ball.Ball(10,screen)
-ballList = l.getBallList()
+l = InitializeEnv.InitializeEnv(10, screen)
+ballList = l.get_ball_list()
 screen.mainloop()
 
 # screen.
