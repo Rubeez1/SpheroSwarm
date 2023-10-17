@@ -7,7 +7,7 @@ def calculate_distance(start_pos, end_pos):
 
 # SPHERE CLASS
 class Sphere:
-    def __init__(self, id, pos, active):
+    def __init__(self, id, pos, active, path = None, path_idx = 0):
         # object ID: int    
         #   assigned by order of initialization
         self.id = id
@@ -19,6 +19,9 @@ class Sphere:
         self.dest = copy.deepcopy(pos)
         # object's next immediate movement: dictionary of {'x': x, 'y': y}
         self.step = copy.deepcopy(pos)
+        # object's path calculated using Astar and index to track the step
+        self.path = path
+        self.path_idx = path_idx
     
     def __str__(self):
         return f"{self.id} {self.pos} {self.dest} {self.active}"
