@@ -12,7 +12,7 @@ mol_array = [(15,10),(15,20),(10,12),(10,18),(20,12),(20,18)]
 grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
 
 class AStarNode:
-    def __init__(self, parent=None, pos=None):
+    def __init__(self, parent, pos):
         self.pos = pos
         self.parent = parent
         self.g = 0 #step cost
