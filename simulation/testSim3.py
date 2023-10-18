@@ -38,7 +38,7 @@ def astar(sphere, occupancies):
             if node.f < currNode.f:
                 currNode = node
                 currInd = i
-        
+
         # pop the smallest f cost node
         openList.pop(currInd)
         closedList.append(currNode)
@@ -63,20 +63,25 @@ def astar(sphere, occupancies):
             newNode = AStarNode(currNode, newPos)
             children.append(newNode)
         
+        isInClosedList = False
+        isValidForOpenList = True
         for child in children:
             for closedChild in closedList:
-                if child == closedChild:
-                    continue
+                if child.pos == closedChild.pos:
+                    isInClosedList = True
+                    break
                 #ignore child, since already in closed list (visited
-            child.g = currNode.g + 1
-            child.h = endNode.pos[0] - child.pos[0] + endNode.pos[1] - child.pos[1] #manhattan distance
-            child.f = child.g + child.h
+            if(isInClosedList == False):
+                child.g = currNode.g + 1
+                child.h = endNode.pos[0] - child.pos[0] + endNode.pos[1] - child.pos[1] #manhattan distance
+                child.f = child.g + child.h
             
-            for openNode in openList:
-                if child == openNode and child.g > openNode.g: #looking for lowest cost node
-                    continue
-            
-            openList.append(child)
+                for openNode in openList:
+                    if child.pos == openNode.pos and child.g > openNode.g: #looking for lowest cost node
+                        isValidForOpenList = False
+                        continue
+                if isValidForOpenList:
+                    openList.append(child)
             
         
 
@@ -127,6 +132,7 @@ for obj in objects:
 for obj in objects:
     if (obj.active):
         obj.path = astar(obj, occupancies)
+        print(obj.path)
 
 # Function to print the grid
 def print_grid():
@@ -135,6 +141,7 @@ def print_grid():
     print('=' * 30 + "\n")  # Add some spacing between frames        
 
 # Main simulation loop
+'''
 while True:
     # Clear the grid
     for i in range(grid_size):
@@ -187,3 +194,4 @@ while True:
 
     # Add a delay to control the simulation speed
     time.sleep(0.5)  # Adjust the sleep time as needed
+'''
