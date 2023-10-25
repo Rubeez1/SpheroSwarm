@@ -42,11 +42,12 @@ def astar(sphere, occupancies):
         # pop the smallest f cost node
         openList.pop(currInd)
         closedList.append(currNode)
-        
+
         # If the node is destination, return the path
-        if currNode == endNode:
+        if currNode.pos == endNode.pos:
             path = []
             curr = currNode
+            print(currNode.pos)
             while curr is not None:
                 path.append(curr.pos)
                 curr = curr.parent #basically recursivesly moves back to start from end
