@@ -42,22 +42,21 @@ def astar(sphere, occupancies):
         # pop the smallest f cost node
         openList.pop(currInd)
         closedList.append(currNode)
-
+        print(currNode.pos, endNode.pos, currNode.h)
         # If the node is destination, return the path
-        if currNode.pos == endNode.pos:
+        if currNode.pos[0] == endNode.pos[0] and currNode.pos[1] == endNode.pos[1]:
             path = []
             curr = currNode
-            print(currNode.pos)
             while curr is not None:
                 path.append(curr.pos)
                 curr = curr.parent #basically recursivesly moves back to start from end
             return path[::-1] #reverses path
     
-        #generates neighbor nodes
+        # generates neighbor nodes
         children = []
         for nextStep in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
             newPos = currNode.pos[0] + nextStep[0], currNode.pos[1] + nextStep[1]
-            if newPos[0] > (len(grid) - 1) or newPos[0] < 0 or newPos[1] > (len(grid[len(grid)-1]) -1) or newPos[1] < 0: #checks to make sure not out of bounds
+            if newPos[0] > (len(grid) - 1) or newPos[0] < 0 or newPos[1] > (len(grid) - 1) or newPos[1] < 0: #checks to make sure not out of bounds
                 continue
             if str(newPos) in occupancies: #checks to make sure not occupied
                 continue
@@ -74,13 +73,13 @@ def astar(sphere, occupancies):
                 #ignore child, since already in closed list (visited
             if(isInClosedList == False):
                 child.g = currNode.g + 1
-                child.h = endNode.pos[0] - child.pos[0] + endNode.pos[1] - child.pos[1] #manhattan distance
+                child.h = math.sqrt(abs(endNode.pos[0] - child.pos[0]) ** 2 + abs(endNode.pos[1] - child.pos[1]) ** 2) #manhattan distance
                 child.f = child.g + child.h
             
                 for openNode in openList:
                     if child.pos == openNode.pos and child.g > openNode.g: #looking for lowest cost node
                         isValidForOpenList = False
-                        continue
+                        break
                 if isValidForOpenList:
                     openList.append(child)
             
