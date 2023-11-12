@@ -19,6 +19,7 @@ class Atom:
 
 #initialize atom objects
 #numbering is currently arbitrary
+#start positions assume a 13x13 grid where (1,1) is the node in the bottom-left corner
 carbon1 = Atom([(0,-1),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1)],(7,13))
 oxygen1 = Atom([(1,0),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1)],(6,13))
 hydrogen1 = Atom([(1,0),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1),(0,-1)],(5,13))
