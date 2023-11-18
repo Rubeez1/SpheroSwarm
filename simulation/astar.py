@@ -1,4 +1,6 @@
 import math
+import heapq
+import itertools
 
 class Node():
     """A node in 2D array
@@ -41,18 +43,23 @@ def a_star(start, goal, map):
     # List of discovered nodes that may need to expaneded
     # Initially start node is added to open nodes list
     open_nodes = []
-    open_nodes = insert_value(open_nodes, start)
-    print(open_nodes)
+    counter = itertools.count() # counter for tie breaker when there are more than 1 equal fcost nodes
+    
+    # Add start to the open node list
+    count = next(counter)
+    heapq.heappush(open_nodes, (start.fcost, count, start))
 
     # Map containing gcost of each node found so far
     # Each coordinate is initialized to infinite
     gcost_map = [[math.inf for col in map[0]] for row in map]
+
     # Set start node gcost to 0
     gcost_map[start.coords[0]][start.coords[1]] = 0
 
     while len(open_nodes) != 0:
         # Pop the node from open_nodes priority queue to get node with lowest fcost
-        current_node = open_nodes.pop(0)
+        # current_node = open_nodes.pop(0)
+        fcost, count, current_node = heapq.heappop(open_nodes)
 
         # Check if current node is the destination node, if true, return path
         if current_node.coords == goal.coords:
@@ -70,9 +77,10 @@ def a_star(start, goal, map):
                 next_node.hcost = get_hcost(next_node, goal)
                 next_node.set_fcost()
                 next_node.parent = current_node
-                if not doesNodeExist(open_nodes, next_node):
-                    open_nodes = insert_value(open_nodes, next_node)
-    
+                if not does_node_exist(open_nodes, next_node):
+                    count = next(counter)
+                    heapq.heappush(open_nodes, (next_node.fcost, count, next_node))
+
     return [] # Return empty path list for failure
 
 def get_path(goal):
@@ -117,100 +125,13 @@ def is_within_map(new_pos, map):
 def get_hcost(node, goal):
     return math.sqrt((goal.coords[0] - node.coords[0]) ** 2 + (goal.coords[1] - node.coords[1]) ** 2) #Euclidean distance
 
-def doesNodeExist(array, node):
-    for element in array:
-        if element.coords == node.coords:
+def does_node_exist(array, node):
+    for fcost, count, open_node in array:
+        if open_node.coords == node.coords:
             return True
     return False
 
-def binary_search(array, value, start_index, end_index):
-    """Performs binary search with input array
-
-    Args:
-      array: a list to be searched
-      value: an int value to be searched
-      start_index: an int, start index of array
-      end_index: an int, end index of array
-
-    Returns:
-        an integer index that value should be located if value is inserted to the list
-    """
-    assert end_index > -1, "end_index should not be negative (array must not be empty)"
-
-    if start_index + 1 == end_index or start_index == end_index:
-        if value == array[end_index]:
-            return end_index + 1
-        elif value == array[start_index]:
-            return start_index + 1
-        elif value < array[start_index]:
-            return start_index
-        elif value < array[end_index]:
-            return end_index
-        else:
-            return end_index + 1
-    
-    mid = (end_index + start_index) // 2
-    if array[mid] < value:
-        return binary_search(array, value, mid + 1, end_index)
-    elif array[mid] > value:
-        return binary_search(array, value, start_index, mid - 1)
-    else:
-        next_larger_value_index = mid
-        while next_larger_value_index < len(array) and array[next_larger_value_index] == value:
-            next_larger_value_index += 1
-        return next_larger_value_index
-
-def insert_value(array, value):
-    """Inserts value into priority queue list array
-       If the value already exist in the array, it is added last
-
-    Args:
-      array: a list to be searched
-      value: an int value to be searched
-
-    Returns:
-        an array with value inserted
-    """
-    if len(array) == 0:
-        array = [value]
-    else:
-        index = binary_search(array, value, 0, len(array) - 1)
-        array = array[0:index] + [value] + array[index:len(array)]
-    return array
-
-def test_binary_search_insert():
-    array = [1,2,3,7,8]
-    print(binary_search(array, 4, 3, 4))
-    print(binary_search(array, 3, 0, 4))
-    print(binary_search(array, 8, 0, 4))
-    print(binary_search(array, 1.5, 0, 4))
-
-    array = insert_value(array, 4)
-    print(array)
-
-    array = insert_value(array, 3)
-    print(array)
-
-    array = insert_value(array, 8)
-    array = insert_value(array, 8)
-    print(array)
-
-    array = insert_value(array, 0.5)
-    print(array)
-
-    array = insert_value(array, 1.5)
-    print(array)
-
-    array = []
-    array = insert_value(array, 1)
-    print(array)
-
-    print(insert_value(array, 1))
-    print(insert_value(array, -1))
-
 if __name__ == "__main__":
-    
-    # test_binary_search_insert()
 
     # Test A* algorithm
     map = [[False for i in range(13)] for j in range(13)]
