@@ -69,14 +69,17 @@ def a_star(start, goal, map):
 
         for next_node in next_nodes:
             # Next node's gscore is current node gcost + weight of edge, which in this project is uniform 1
-            next_node_gcost = current_node.gcost + 1
+            next_node.gcost = current_node.gcost + 1
             
             # If next node gcost is less than gcost of previously calculated node with same coordinate, this path is better than previous path
-            if next_node_gcost < gcost_map[next_node.coords[0]][next_node.coords[1]]:
-                gcost_map[next_node.coords[0]][next_node.coords[1]] = next_node_gcost
+            if next_node.gcost < gcost_map[next_node.coords[0]][next_node.coords[1]]:
+                gcost_map[next_node.coords[0]][next_node.coords[1]] = next_node.gcost
+
                 next_node.hcost = get_hcost(next_node, goal)
                 next_node.set_fcost()
                 next_node.parent = current_node
+
+                # If next_node does not exist in open node, add to open node
                 if not does_node_exist(open_nodes, next_node):
                     count = next(counter)
                     heapq.heappush(open_nodes, (next_node.fcost, count, next_node))
@@ -127,7 +130,7 @@ def get_hcost(node, goal):
 
 def does_node_exist(array, node):
     for fcost, count, open_node in array:
-        if open_node.coords == node.coords:
+        if open_node.coords == node.coords and open_node.gcost == node.gcost:
             return True
     return False
 
