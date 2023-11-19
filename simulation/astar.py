@@ -17,7 +17,7 @@ class Node():
         self.gcost = 0 # Cost from starting node to current node
         self.hcost = 0 # Estimated cost from current node to destination node
         self.fcost = self.gcost + self.hcost 
-        self.parent = None
+        # self.parent = None
     def __eq__(self, other):
         return self.fcost == other
     def __gt__(self, other):
@@ -53,6 +53,9 @@ def a_star(start, goal, map):
     # Each coordinate is initialized to infinite
     gcost_map = [[math.inf for col in map[0]] for row in map]
 
+    # Map containing parent node of node at coordinate (x,y)
+    parent_map = [[None for col in map[0]] for row in map]
+
     # Set start node gcost to 0
     gcost_map[start.coords[0]][start.coords[1]] = 0
 
@@ -63,7 +66,7 @@ def a_star(start, goal, map):
 
         # Check if current node is the destination node, if true, return path
         if current_node.coords == goal.coords:
-            return get_path(current_node)
+            return get_path(parent_map, current_node.coords)
         
         next_nodes = get_next_nodes(current_node, map) # Get next possible nodes
 
@@ -74,10 +77,12 @@ def a_star(start, goal, map):
             # If next node gcost is less than gcost of previously calculated node with same coordinate, this path is better than previous path
             if next_node.gcost < gcost_map[next_node.coords[0]][next_node.coords[1]]:
                 gcost_map[next_node.coords[0]][next_node.coords[1]] = next_node.gcost
+                parent_map[next_node.coords[0]][next_node.coords[1]] = current_node
 
                 next_node.hcost = get_hcost(next_node, goal)
                 next_node.set_fcost()
-                next_node.parent = current_node
+                
+                # next_node.parent = current_node
 
                 # If next_node does not exist in open node, add to open node
                 if not does_node_exist(open_nodes, next_node):
@@ -86,19 +91,22 @@ def a_star(start, goal, map):
 
     return [] # Return empty path list for failure
 
-def get_path(goal):
+def get_path(parent_map, coords):
     """Contructs path with goal node
 
     Args:
-      goal: a Node, containing linked parent nodes to the start node 
+      parent_map: a map, containing parent node of node in map
+      coords: destination coordinate
 
     Returns:
         path: a list, containing coordinates in tuple from start to goal
     """
     path = []
-    while goal != None:
-        path.insert(0, goal.coords)
-        goal = goal.parent
+    path.insert(0, coords)
+    current_node = parent_map[coords[0]][coords[1]]
+    while current_node != None:
+        path.insert(0, current_node.coords)
+        current_node = parent_map[current_node.coords[0]][current_node.coords[1]]
 
     return path
 
