@@ -49,12 +49,11 @@ def a_star(start, goal, map):
     count = next(counter)
     heapq.heappush(open_nodes, (start.fcost, count, start))
 
-    # Map containing gcost of each node found so far
-    # Each coordinate is initialized to infinite
-    gcost_map = [[math.inf for col in map[0]] for row in map]
+    # Dictionary containing nodes that are already visited
+    closed_nodes = {}
 
-    # Set start node gcost to 0
-    gcost_map[start.coords[0]][start.coords[1]] = 0
+    # Add the start node to the closed_nodes
+    closed_nodes[start.coords] = start
 
     while len(open_nodes) != 0:
         # Pop the node from open_nodes priority queue to get node with lowest fcost
@@ -68,13 +67,15 @@ def a_star(start, goal, map):
         next_nodes = get_next_nodes(current_node, map) # Get next possible nodes
 
         for next_node in next_nodes:
-            # Next node's gscore is current node gcost + weight of edge, which in this project is uniform 1
+            # Next node's gcost is current node gcost + weight of edge, which in this project is uniform 1
             next_node.gcost = current_node.gcost + 1
             
             # If next node gcost is less than gcost of previously calculated node with same coordinate, this path is better than previous path
-            if next_node.gcost < gcost_map[next_node.coords[0]][next_node.coords[1]]:
-                gcost_map[next_node.coords[0]][next_node.coords[1]] = next_node.gcost
+            if next_node.coords not in closed_nodes or next_node.gcost < closed_nodes[next_node.coords].gcost:
+                # Update closed nodes dictionary
+                closed_nodes[next_node.coords] = next_node
 
+                # Set cost and parent
                 next_node.hcost = get_hcost(next_node, goal)
                 next_node.set_fcost()
                 next_node.parent = current_node
@@ -135,6 +136,8 @@ def does_node_exist(array, node):
     return False
 
 if __name__ == "__main__":
+
+
 
     # Test A* algorithm
     map = [[False for i in range(13)] for j in range(13)]
