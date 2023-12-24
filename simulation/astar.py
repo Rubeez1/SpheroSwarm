@@ -123,6 +123,26 @@ def get_next_nodes(node, map):
 
     return next_nodes
 
+def get_next_nodes_3D(node, map):
+    """Checks next possible nodes of input node and return list of next possible nodes
+
+    Args:
+      node: a Node, that needs next possible nodes
+      map:  3-D list map with obstacle information
+
+    Returns:
+        next_nodes: a list, containing next possible nodes that agent can travel to from current node
+    """
+    next_nodes = []
+    for next_step in [(0, -1, 1), (0, 1, 1), (-1, 0, 1), (1, 0, 1), (0, 0, 1)]:
+        new_pos = [node.coords[0] + next_step[0], node.coords[1] + next_step[1], node.coords[2] + next_step[2]]
+        # Check if new pos is within the grid
+        # TODO - Check if there is conflict
+        if is_within_map(new_pos, map) and map[new_pos[0]][new_pos[1]] == False:
+            next_nodes.append(Node(new_pos))
+
+    return next_nodes
+
 def is_within_map(new_pos, map):
     return new_pos[0] >= 0 and new_pos[0] <= len(map[0]) - 1 and new_pos[1] >= 0 and new_pos[1] <= len(map[0]) - 1
 
