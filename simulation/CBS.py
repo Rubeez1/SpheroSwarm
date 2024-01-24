@@ -63,7 +63,7 @@ def get_agents_path(agents):
     for agent in agents:
         # Calculate map that accounts constraint
         map = get_constraint_map()
-        path.append(astar.a_star(agent[0], agent[1], map))
+        path.append(astar.astar(agent[0], agent[1], map))
     return
 
 # TODO - apply constraint to the map
