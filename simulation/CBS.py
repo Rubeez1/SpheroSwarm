@@ -67,6 +67,7 @@ def get_agents_path(agents):
     return
 
 # TODO - apply constraint to the map
+# Is this neccessary?
 def get_constraint_map(constraint):
 
     map = [[False for i in range(13)] for j in range(13)]

@@ -64,7 +64,7 @@ def a_star(start, goal, map):
         if current_node.coords == goal.coords:
             return get_path(current_node)
         
-        next_nodes = get_next_nodes(current_node, map) # Get next possible nodes
+        next_nodes = get_next_nodes_2D(current_node, map) # Get next possible nodes
 
         for next_node in next_nodes:
             # Next node's gcost is current node gcost + weight of edge, which in this project is uniform 1
@@ -103,7 +103,7 @@ def get_path(goal):
 
     return path
 
-def get_next_nodes(node, map):
+def get_next_nodes_2D(node, map):
     """Checks next possible nodes of input node and return list of next possible nodes
 
     Args:
@@ -155,11 +155,8 @@ def does_node_exist(array, node):
             return True
     return False
 
-if __name__ == "__main__":
-
-
-
-    # Test A* algorithm
+def test_2D():
+    # Test A* algorithm in 2D array
     map = [[False for i in range(13)] for j in range(13)]
     start = Node((0,0))
     goal = Node((7,10))
@@ -182,3 +179,15 @@ if __name__ == "__main__":
     goal = Node((12,0))
     path = a_star(start, goal, map)
     print(path)
+
+def test_3D():
+    # Test A* algorithm in 3D array
+    map = [[False for i in range(13)] for j in range(13)] # Initialize the map
+    start = Node((0,0))
+    goal = Node((7,10))
+    path = a_star(start, goal, map)
+    print(path)
+
+if __name__ == "__main__":
+    # test_2D()
+    test_3D()
