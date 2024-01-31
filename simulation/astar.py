@@ -68,7 +68,7 @@ def astar(start, goal, map, constraints):
     while len(open_nodes) != 0:
         # Pop the node from open_nodes priority queue to get node with lowest fcost
         # current_node = open_nodes.pop(0)
-        fcost, count, current_node = heapq.heappop(open_nodes)
+        _fcost, _count, current_node = heapq.heappop(open_nodes)
 
         # Check if current node is the destination node, if true, return path
         if current_node.coords[0] == goal.coords[0] and current_node.coords[1] == goal.coords[1]:
