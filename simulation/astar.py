@@ -21,7 +21,7 @@ class Node():
         self.gcost = 0 # Cost from starting node to current node
         self.hcost = 0 # Estimated cost from current node to destination node
         self.fcost = self.gcost + self.hcost 
-        # self.parent = None
+        self.parent = None
     def __eq__(self, other):
         return self.fcost == other
     def __gt__(self, other):
@@ -71,7 +71,6 @@ def astar(start, goal, map, constraints):
         fcost, count, current_node = heapq.heappop(open_nodes)
 
         # Check if current node is the destination node, if true, return path
-
         if current_node.coords[0] == goal.coords[0] and current_node.coords[1] == goal.coords[1]:
             return get_path(current_node)
         
@@ -82,7 +81,6 @@ def astar(start, goal, map, constraints):
             next_node.gcost = current_node.gcost + 1
             
             # If next node gcost is less than gcost of previously calculated node with same coordinate, this path is better than previous path
-
             if next_node.coords not in closed_nodes or next_node.gcost < closed_nodes[next_node.coords].gcost:
                 # Update closed nodes dictionary
                 closed_nodes[next_node.coords] = next_node
@@ -90,8 +88,7 @@ def astar(start, goal, map, constraints):
                 # Set cost and parent
                 next_node.hcost = get_hcost(next_node, goal)
                 next_node.set_fcost()
-                
-                # next_node.parent = current_node
+                next_node.parent = current_node
 
                 # If next_node does not exist in open node, add to open node
                 if not does_node_exist(open_nodes, next_node):
@@ -100,22 +97,19 @@ def astar(start, goal, map, constraints):
 
     return [] # Return empty path list for failure
 
-def get_path(parent_map, coords):
+def get_path(goal):
     """Contructs path with goal node
 
     Args:
-      parent_map: a map, containing parent node of node in map
-      coords: destination coordinate
+      goal: a Node, containing linked parent nodes to the start node 
 
     Returns:
         path: a list, containing coordinates in tuple from start to goal
     """
     path = []
-    path.insert(0, coords)
-    current_node = parent_map[coords[0]][coords[1]]
-    while current_node != None:
-        path.insert(0, current_node.coords)
-        current_node = parent_map[current_node.coords[0]][current_node.coords[1]]
+    while goal != None:
+        path.insert(0, goal.coords)
+        goal = goal.parent
 
     return path
 
