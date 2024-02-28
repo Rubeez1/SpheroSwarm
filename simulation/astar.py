@@ -7,8 +7,8 @@ class Node():
 
     Attributes:
       coords: a tuple, coordinate of this node: 
-        (x coordinate, y coordinate, timestep)
-        eg: (5,7,1): (5,7) at time step 1
+        (array, x coordinate, y coordinate, timestep)
+        eg: (1,5,7,1): (1,5,7) at time step 1
       gcost: cost from starting node to this node
       hcost: estimated cost from current node to destination node
       fcost: gcost + hcost
@@ -47,8 +47,8 @@ def astar(start, goal, map, constraints):
     assert map[0] >= goal.coords[0] and map [1] >= goal.coords[1] # Map must be large and contain goal node
 
     # Set start node coords to contain timestep if it does not already contain timestep
-    if len(start.coords) == 2:
-        start.coords = (start.coords[0], start.coords[1], 0)
+    if len(start.coords) == 3:
+        start.coords = (start.coords[0], start.coords[1], start.coords[2], 0)
 
     # List of discovered nodes that may need to expaneded
     # Initially start node is added to open nodes list
@@ -71,7 +71,7 @@ def astar(start, goal, map, constraints):
         _fcost, _count, current_node = heapq.heappop(open_nodes)
 
         # Check if current node is the destination node, if true, return path
-        if current_node.coords[0] == goal.coords[0] and current_node.coords[1] == goal.coords[1]:
+        if current_node.coords[0] == goal.coords[0] and current_node.coords[1] == goal.coords[1] and current_node.coords[2] == goal.coords[2]:
             return get_path(current_node)
         
         next_nodes = get_next_nodes_with_constraints(current_node, map, constraints)
@@ -125,18 +125,52 @@ def get_next_nodes_with_constraints(node, map, constraints):
         next_nodes: a list, containing next possible nodes that agent can travel to from current node
     """
     next_nodes = []
-    for next_step in [(0, -1, 1), (0, 1, 1), (-1, 0, 1), (1, 0, 1), (0, 0, 1)]:
-        new_pos = (node.coords[0] + next_step[0], node.coords[1] + next_step[1], node.coords[2] + next_step[2])
+    for neighbor in get_neighbors(node.coords[0], node.coords[1], node.coords[2]):
+        new_pos = neighbor + (node.coords[3] + 1,) # Append timestep
         # Check if new pos is within the grid and Check if there is conflict
-        if is_within_map(new_pos, map) and new_pos not in constraints:
+        if is_within_hex_map(new_pos, map) and new_pos not in constraints:
             next_nodes.append(Node(new_pos))
     return next_nodes
 
-def is_within_map(new_pos, map):
-    return new_pos[0] >= 0 and new_pos[0] <= map[0] and new_pos[1] >= 0 and new_pos[1] <= map[1]
+def get_neighbors(a, r, c):
+    """Returns nearest neighbors accordinging to hexagonal efficient coordinate system
+
+    Args:
+      a: array index
+      r: row index
+      c: column index
+
+    Returns:
+        neighbors: a list of tuples containing neighbor node coordinate of input coordinate
+    """
+    neighbors = []
+    # Top left
+    neighbors.append((1 - a, r - (1 - a), c - (1 - a)))
+    # Top right
+    neighbors.append((1 - a, r - (1 - a), c + a))
+    # Right
+    neighbors.append((a, r, c + 1))
+    # Bottom right
+    neighbors.append((1 - a, r + a, c + a))
+    # Bottom left
+    neighbors.append((1 - a, r + a, c - (1 - a)))
+    # Left
+    neighbors.append((a, r, c - 1))
+
+    return neighbors
+
+def is_within_hex_map(new_pos, map):
+    is_within = True
+    if new_pos[0] == 0:
+        if new_pos[1] < 0 or new_pos[1] > map[0] or new_pos[2] < 0 or new_pos[2] > (map[1] // 2) + 1:
+            is_within = False
+    else:
+        if new_pos[1] < 0 or new_pos[1] > map[0] or new_pos[2] < 0 or new_pos[2] > (map[1] // 2):
+            is_within = False
+    return is_within
 
 def get_hcost(node, goal):
-    return math.sqrt((goal.coords[0] - node.coords[0]) ** 2 + (goal.coords[1] - node.coords[1]) ** 2) #Euclidean distance
+    return math.sqrt((goal.coords[0] - node.coords[0]) ** 2 + (goal.coords[1] - node.coords[1]) ** 2 + (goal.coords[2] - node.coords[2]) ** 2) #Euclidean distance
 
 def does_node_exist(array, node):
     for fcost, count, open_node in array:
@@ -144,7 +178,7 @@ def does_node_exist(array, node):
             return True
     return False
 
-def test_astar():
+def test_astar_matrix():
     # Test A* algorithm with constraints
     map = [13, 13] # Initialize the map
     start = Node((0,0))
@@ -156,8 +190,17 @@ def test_astar():
     constraints = {(0,1,1), (6,10,16)}
     path = astar(start, goal, map, constraints)
     print(path)
+
+def test_astar_hex():
+    # Test A* algorithm with constraints in hex map
+    map = [13, 13] # Initialize the map
+    start = Node((0,0,0))
+    goal = Node((1,5,7))
+    constraints = {}
+    path = astar(start, goal, map, constraints)
+    print(path)
     
 
 
 if __name__ == "__main__":
-    test_astar()
+    test_astar_hex()
